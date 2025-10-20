@@ -60,7 +60,7 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
     Requires: Valid JWT token in Authorization header
     """
     # Update last seen
-    current_user.last_seen = datetime.utcnow()
+    current_user.last_seen = datetime.now(timezone.utc)
     await current_user.save()
     
     return UserResponse(
@@ -107,7 +107,7 @@ async def logout(current_user: User = Depends(get_current_user)):
     Note: JWT tokens are stateless, so actual logout happens on client side
     by removing the token from storage
     """
-    current_user.last_seen = datetime.utcnow()
+    current_user.last_seen = datetime.now(timezone.utc)
     await current_user.save()
     
     return {"success": True, "message": "Logged out successfully"}

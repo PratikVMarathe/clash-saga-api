@@ -1,7 +1,7 @@
 from beanie import Document, Indexed
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 class UserStats(BaseModel):
     """User game statistics"""
@@ -34,8 +34,8 @@ class User(Document):
     friends: List[str] = []
     
     # Timestamps
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_login: Optional[datetime] = None
     last_seen: Optional[datetime] = None
     
@@ -54,7 +54,7 @@ class User(Document):
             self.stats.win_rate = (self.stats.games_won / self.stats.total_games) * 100
             
         self.stats.total_playtime += playtime_minutes
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
     
     def to_dict(self):
         """Convert to dictionary for API responses"""

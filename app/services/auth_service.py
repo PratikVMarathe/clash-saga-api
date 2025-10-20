@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from app.models.user import User
 from app.utils.auth_utils import verify_google_token, create_access_token, generate_username_from_email
 from fastapi import HTTPException, status
@@ -37,9 +37,9 @@ class AuthService:
             user.email = user_info["email"]
             user.name = user_info["name"]
             user.avatar = user_info["avatar"]
-            user.last_login = datetime.utcnow()
-            user.last_seen = datetime.utcnow()
-            user.updated_at = datetime.utcnow()
+            user.last_login = datetime.now(timezone.utc)
+            user.last_seen = datetime.now(timezone.utc)
+            user.updated_at = datetime.now(timezone.utc)
             await user.save()
         else:
             # Create new user
@@ -52,8 +52,8 @@ class AuthService:
                 avatar=user_info["avatar"],
                 username=suggested_username,  # Can be changed later
                 is_verified=True,
-                last_login=datetime.utcnow(),
-                last_seen=datetime.utcnow()
+                last_login=datetime.now(timezone.utc),
+                last_seen=datetime.now(timezone.utc)
             )
             await user.insert()
         
@@ -86,7 +86,7 @@ class AuthService:
         if selected_avatar:
             user.selected_avatar = selected_avatar
         
-        user.updated_at = datetime.utcnow()
+        user.updated_at = datetime.now(timezone.utc)
         await user.save()
         
         return user
